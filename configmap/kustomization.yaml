@@ -1,0 +1,34 @@
+# kustomization.yaml
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - namespace.yaml
+  - deployment.yaml
+
+nameSuffix: -svc
+namePrefix: stag-
+
+generatorOptions:
+  disableNameSuffixHash: true
+  labels:
+    app: nginx
+    env: staging
+configMapGenerator:
+- name: config-app-file
+  files:
+  - application.properties
+- name: config-app
+  literals:
+    - "app_name=payment-service"
+    - "version=1.0"
+
+
+secretGenerator:
+  - name: db-conf-file
+    files:
+      - db.yaml
+  - name: db-conf
+    literals:
+      - db_name=payment
+      - username=admin
+      - password=Admin#1234

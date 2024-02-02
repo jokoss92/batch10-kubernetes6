@@ -1,0 +1,17 @@
+# kustomization.yaml
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: staging
+
+namePrefix: stag-
+
+resources:
+  - ../../bases/catalog-svc
+  - namespace.yaml
+
+patchesJson6902:
+  - target:
+      kind: Deployment
+      name: catalog-svc
+      version: v1
+    path: patch.yaml

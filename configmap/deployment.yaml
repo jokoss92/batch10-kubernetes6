@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: payment-deployment
+spec:
+  selector:
+    matchLabels:
+      app: payment
+  template:
+    metadata:
+      labels:
+        app: payment
+    spec:
+      volumes:
+        - name: config-file
+          configMap:
+            name: config-app-file
+        - name: db-conf-from-file
+          secret:
+            secretName: db-conf-file
+      containers:
+      - name: payment
+        image: nginx:latest
+        resources:
+          requests:
+            memory: "32Mi"
+            cpu: "100m"
+          limits:
+            memory: "128Mi"
+            cpu: "200m"
+        ports:
+        - containerPort: 80
+        envFrom:
+          - configMapRef:
+              name: config-app
+          - secretRef:
+              name: db-conf
+        volumeMounts:
+          - mountPath: /conf/app/
+            name: config-file
+          - mountPath: /conf/db/
+            name: db-conf-from-file
